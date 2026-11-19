@@ -400,341 +400,238 @@ The goal of this project is to introduce students to Arduino programming, servo 
 
 ---
 
-# Project 2: Arduino Secret Box 🔐
+# Arduino Glowing Name Plate 
 
 ## About This Project
 
-In this project, you will create a password-protected
-locking system using an Arduino Uno, three buttons,
-and a servo motor.
+This project teaches you how to use an **Arduino Uno** to control three LEDs (red, green, and blue).
 
-When the correct button sequence is entered, the
-servo rotates to unlock the box.
+When the program runs, all three LEDs turn on and stay on. This can be used to illuminate a 3D-printed name plate!
 
-**Difficulty:** Beginner–Intermediate  
-**Software:** Tinkercad Circuits  
-**Estimated circuit time:** 30–60 minutes  
+**Difficulty:** Beginner  
+**Estimated setup time:** 15–30 minutes  
 **Programming language:** Arduino C++
-
-For now, this project is completed entirely in
-Tinkercad. No physical components are required.
 
 ## 1. Materials Needed
 
-| Component | Quantity |
-|---|---|
-| Arduino Uno R3 | 1 |
-| Breadboard | 1 |
-| Pushbuttons | 3 |
-| Micro servo motor | 1 |
-| Jumper wires | As needed |
+Before starting, gather these materials:
 
-### What Do These Components Do?
+- 1 Arduino Uno
+- 1 breadboard
+- 3 LEDs (red, green, and blue)
+- 3 resistors (220 ohms each)
+- Jumper wires
+- USB cable for the Arduino
+- A computer with Arduino IDE or access to Tinkercad Circuits
 
-- **Arduino Uno:** Controls the circuit.
-- **Breadboard:** Connects components without soldering.
-- **Pushbuttons:** Allow you to enter the password.
-- **Servo Motor:** Rotates to lock or unlock the box.
+**What is a breadboard?**
 
-## 2. Wiring Instructions
+A breadboard lets you connect electronic components without soldering. The holes are connected internally in groups, allowing electricity to travel between components.
 
-Go to [Tinkercad](https://www.tinkercad.com/)
-and create a new circuit.
+## 2. Circuit Diagram
 
-### Pushbuttons
+Follow this picture to connect everything:
 
-| Button | Arduino Pin | Other Connection |
+<img width="572" height="467" alt="Arduino Uno glowing name plate LED wiring diagram" src="https://github.com/user-attachments/assets/bc06ac0b-4a02-43d1-a3ae-9a7f74d2b314" />
+
+### Wiring Instructions
+
+Connect the LEDs to these Arduino pins:
+
+| LED Color | Arduino Pin | Resistor |
 |---|---|---|
-| Red | 2 | GND |
-| Blue | 3 | GND |
-| Green | 4 | GND |
+| Red | 9 | 220 Ω |
+| Green | 8 | 220 Ω |
+| Blue | 7 | 220 Ω |
 
-Each button connects between its assigned digital
-pin and GND.
+Each LED has two legs:
 
-Make sure you use opposite switch contacts.
+- **Anode (+):** The positive leg, usually the longer one.
+- **Cathode (−):** The negative leg, usually the shorter one.
 
-The code uses the Arduino's internal pull-up
-resistors, so no external button resistors are needed.
+For each LED, connect:
 
-### Servo Motor
+1. The Arduino digital pin to the LED's anode (+).
+2. The LED's cathode (−) to one end of a 220 Ω resistor.
+3. The other end of the resistor to GND (ground).
 
-| Servo Wire | Arduino Connection |
-|---|---|
-| Red (Power) | 5V |
-| Brown/Black (Ground) | GND |
-| Orange/Yellow (Signal) | Pin 9 |
-
-**Note:** This setup is for Tinkercad simulation.
-A physical servo may require a separate regulated
-5V power supply.
+**Important:** Every LED needs its own resistor to limit the electrical current and help prevent damage.
 
 ## 3. Arduino Code
 
-Click **Code**, switch to **Text**, and paste:
+Copy the following code into Arduino IDE or Tinkercad's text editor.
 
 ```cpp
-#include <Servo.h>
-
-Servo lockServo;
-
-const int redButton = 2;
-const int blueButton = 3;
-const int greenButton = 4;
-
-const int servoPin = 9;
-
-// Correct password: Red, Blue, Green
-const int password[] = {0, 1, 2};
-
-int position = 0;
-bool unlocked = false;
+const int redLED = 9;
+const int greenLED = 8;
+const int blueLED = 7;
 
 void setup() {
-  pinMode(redButton, INPUT_PULLUP);
-  pinMode(blueButton, INPUT_PULLUP);
-  pinMode(greenButton, INPUT_PULLUP);
-
-  lockServo.attach(servoPin);
-  lockServo.write(0); // Locked
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
 }
 
 void loop() {
-  if (unlocked) return;
+  digitalWrite(redLED, HIGH);
+ 
 
-  int pressed = -1;
-
-  if (digitalRead(redButton) == LOW) {
-    pressed = 0;
-  } else if (digitalRead(blueButton) == LOW) {
-    pressed = 1;
-  } else if (digitalRead(greenButton) == LOW) {
-    pressed = 2;
-  }
-
-  if (pressed != -1) {
-    if (pressed == password[position]) {
-      position++;
-
-      if (position == 3) {
-        lockServo.write(90);
-        unlocked = true;
-      }
-    } else {
-      position = 0;
-    }
-
-    // Wait until all buttons are released
-    while (digitalRead(redButton) == LOW ||
-           digitalRead(blueButton) == LOW ||
-           digitalRead(greenButton) == LOW) {
-      delay(10);
-    }
-
-    delay(50); // Debounce
-  }
+  digitalWrite(greenLED, HIGH);
+ 
+  digitalWrite(blueLED, HIGH);
 }
 ```
 
 ## 4. Understanding the Code
 
-### Servo Library
+You don't need any programming experience to understand the basics!
+
+### Part 1: Choosing the Pins
 
 ```cpp
-#include <Servo.h>
-Servo lockServo;
+const int redLED = 9;
+const int greenLED = 8;
+const int blueLED = 7;
 ```
 
-The Servo library allows the Arduino to control
-a servo motor.
+These lines tell the Arduino which pins are connected to each LED.
 
-### Button Pins
+For example, `redLED = 9` means the red LED is connected to digital pin 9.
+
+### Part 2: Setting Up the Arduino
 
 ```cpp
-const int redButton = 2;
-const int blueButton = 3;
-const int greenButton = 4;
+void setup() {
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+}
 ```
 
-These tell the Arduino which pins the buttons use.
+The `setup()` function runs once when the Arduino starts.
 
-### Password
+`OUTPUT` tells the Arduino that these pins will send electrical signals to the LEDs.
+
+### Part 3: Turning On the LEDs
 
 ```cpp
-const int password[] = {0, 1, 2};
+void loop() {
+  digitalWrite(redLED, HIGH);
+  digitalWrite(greenLED, HIGH);
+  digitalWrite(blueLED, HIGH);
+}
 ```
 
-The password is:
+The `loop()` function repeats continuously.
 
-**Red → Blue → Green**
+`digitalWrite()` controls whether a pin is on or off.
 
-- 0 = Red
-- 1 = Blue
-- 2 = Green
+- `HIGH` = Turn the pin on.
+- `LOW` = Turn the pin off.
 
-### INPUT_PULLUP
+Since all three LEDs are set to `HIGH`, they stay illuminated.
 
-```cpp
-pinMode(redButton, INPUT_PULLUP);
-```
 
-This enables the Arduino's built-in pull-up resistor.
+## 5. Running the Project in Tinkercad
 
-- HIGH = Button not pressed
-- LOW = Button pressed
+For this project, we will use **Tinkercad Circuits** to build, program, and test our Arduino circuits virtually.
 
-### Servo Positions
+You do not need a physical Arduino or any electronic components.
 
-```cpp
-lockServo.write(0);
-```
+### Step 1: Open Tinkercad
 
-Moves the servo to 0 degrees (locked).
+1. Go to [Tinkercad](https://www.tinkercad.com/).
+2. Sign in using the method provided by your teacher.
+3. Open the **Circuits** section.
+4. Click **Create New Circuit**.
 
-```cpp
-lockServo.write(90);
-```
+### Step 2: Add Your Components
 
-Moves the servo to 90 degrees (unlocked).
+Find and add the following components:
 
-The servo remains unlocked after the correct
-password is entered.
+- 1 Arduino Uno R3
+- 1 breadboard
+- 3 LEDs (red, green, and blue)
+- 3 resistors (220 Ω each)
+- Jumper wires
 
-## 5. Running the Simulation
+### Step 3: Connect Everything
 
-1. Open [Tinkercad](https://www.tinkercad.com/).
-2. Select **Circuits**.
-3. Click **Create New Circuit**.
-4. Add the components from Section 1.
-5. Wire everything according to Section 2.
-6. Click **Code**.
-7. Switch to **Text** mode.
-8. Paste the code from Section 3.
-9. Click **Start Simulation**.
+Follow the circuit diagram in Section 2.
 
-### Testing the Password
+Make sure:
 
-Press the buttons in this order:
+- Red LED connects to pin 9.
+- Green LED connects to pin 8.
+- Blue LED connects to pin 7.
+- Each LED has its own 220 Ω resistor.
+- All three LED circuits connect to GND.
 
-**Red → Blue → Green**
+### Step 4: Add the Code
 
-The servo should rotate from 0° to 90°.
+1. Click **Code** in the upper-right corner.
+2. Switch the programming mode to **Text**.
+3. Delete the existing code.
+4. Copy and paste the Arduino code from Section 3.
 
-Try entering the wrong password.
+### Step 5: Start the Simulation
 
-The servo should remain locked.
+1. Click **Start Simulation**.
+2. Watch your LEDs.
+3. All three LEDs should turn on and stay illuminated.
 
+**Congratulations!** You have successfully built your first Arduino LED circuit!
+
+### Step 6: Experiment
+
+Once your circuit works, try making changes:
+
+- Change the LED colors.
+- Add another LED with its own resistor.
+- Make an LED blink using `delay()`.
+- Experiment with different lighting patterns.
+
+**Remember:** If you add more LEDs, make sure the Arduino's pins aren't overloaded.
+
+---
+
+### Classroom Notes
+
+This project is currently designed for **Tinkercad simulation only**. Physical Arduino construction may be introduced later.
+
+The goal is to understand basic circuits and Arduino programming before working with real electronic components.
 ## 6. Troubleshooting
 
-### Servo Doesn't Move
+**Problem: An LED doesn't turn on.**
 
-- Check that the signal wire connects to pin 9.
-- Check the 5V and GND connections.
-- Make sure the simulation is running.
-- Verify the button sequence.
+Check that:
 
-### Buttons Don't Work
+- The LED is facing the correct direction.
+- The wires are connected to the correct Arduino pins.
+- The resistor is connected properly.
+- The LED's circuit has a connection to GND.
 
-- Check connections to pins 2, 3, and 4.
-- Make sure each button connects to GND.
-- Check that the buttons are wired across
-  opposite switch contacts.
+**Problem: The code won't upload.**
 
-### Wrong Password Unlocks the Servo
+- Make sure the Arduino is connected to the computer.
+- Check that you selected Arduino Uno.
+- Make sure you selected the correct USB port.
+- Try another USB cable if the computer doesn't recognize the Arduino.
 
-- Check the button wiring.
-- Make sure the code matches the circuit.
-- Restart the simulation and test again.
+**Problem: The simulation starts, but nothing happens.**
 
-### Servo Won't Lock Again
+- Check that your code uses pins 9, 8, and 7.
+- Verify the breadboard connections.
+- Make sure the LEDs aren't connected backward.
 
-This is normal.
+## 7. Next Steps
 
-The current program keeps the servo unlocked
-until the simulation is restarted.
+Once the basic circuit works, try experimenting!
 
-## 7. Challenges
+- Add more LEDs to illuminate a larger name plate.
+- Change the code to make the LEDs blink.
+- Create different lighting patterns.
+- Design a name plate using Tinkercad's 3D modeling tools.
+- Experiment with a battery-powered version that doesn't need an Arduino.
 
-### Beginner
-
-- Change the password.
-- Change the servo angle.
-- Add a fourth button.
-
-### Intermediate
-
-- Add a green unlocked indicator LED.
-- Add a red locked indicator LED.
-- Make the box automatically relock.
-
-### Advanced
-
-- Add a buzzer for incorrect passwords.
-- Create a longer password.
-- Design a 3D-printed box and latch.
-
-## 8. Turning It Into a Real Box
-
-Eventually, students could design and print a
-small box with a locking mechanism.
-
-The servo would move the latch when the correct
-password is entered.
-
-The Arduino electronics would remain at school.
-
-Students could take home their printed boxes
-with a separate manual sliding latch.
-
-## 9. Classroom Feasibility Testing
-
-This project is being tested to determine whether
-it is suitable for a Design and Tech class.
-
-### Checklist
-
-- [x] Basic circuit simulated successfully
-- [x] Password sequence tested
-- [x] Servo unlocking tested
-- [ ] 3D-printed box designed
-- [ ] Physical latch tested
-- [ ] Classroom completion time measured
-- [ ] Full project feasibility confirmed
-
-### Estimated Time
-
-| Activity | Estimated Time |
-|---|---|
-| Learning components | 10–15 minutes |
-| Wiring | 20–35 minutes |
-| Coding and testing | 15–25 minutes |
-| Troubleshooting | 10–20 minutes |
-| Designing box | 45–90 minutes |
-| Assembly | 20–40 minutes |
-
-**Estimated total:** 2–4 class periods, assuming
-45–55-minute periods and a simple box design.
-
-3D-printing time is additional.
-
-These estimates should be checked during testing.
-
-## Project Goal
-
-This project introduces students to:
-
-- Arduino programming
-- Pushbutton inputs
-- Servo motor control
-- Password sequences
-- Basic mechanical engineering
-
-The goal is to create a working electronic lock
-and understand how programming can control
-a physical mechanism.
-
-**Happy building! 🔧**
-
-By completing this project, students will learn how software and electronics can work together to control a physical mechanism.
-
-**Happy building! 🔧**
+**Note:** When adding more LEDs, make sure you stay within the Arduino's electrical current limits. Larger groups of LEDs may require a separate power supply and transistor drivers.
